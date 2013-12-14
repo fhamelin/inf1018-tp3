@@ -122,17 +122,22 @@ public class JavaParser implements JavaParserConstants {
         public void showResults(){
                 int fileCount = this.om.size();
 
+                //Variables #1
                 int privateAttr = 0;
                 int publicAttr = 0;
                 int protectedAttr = 0;
+
+                //Variables #2
                 int primitive = 0;
                 int reference = 0;
+                String visibilitePerm = "";
                 for (int curFile = 0; curFile < fileCount; curFile++) {
                         JavaFile javaFile;
             javaFile = (JavaFile) this.om.get(curFile);
                         ListIterator i = javaFile.get_classList().listIterator();
             while(i.hasNext()){
                     DescriptionClass c = (DescriptionClass)i.next();
+                    visibilitePerm += "Visibilit\u00e9 permanente de la classe " + c.get_Name() + " : \u005cn";
                     List<Attribute> attrs = c.get_AttributeList();
                     for (Attribute attr: attrs) {
 
@@ -155,6 +160,7 @@ public class JavaParser implements JavaParserConstants {
                                                 else
                                                 {
                                                         reference++;
+                                                        visibilitePerm += "    " + attr.get_Type() + "\u005cn";
                                                 }
                     }
             }
@@ -178,6 +184,7 @@ public class JavaParser implements JavaParserConstants {
 
                 System.out.println("% des attributs de type simple : " + (double)primitive / total * 100d);
                 System.out.println("% des attributs de r\u00e9f\u00e9rence : " + (double)reference / total * 100d);
+                System.out.println(visibilitePerm);
         }
 
 /*****************************************
@@ -3319,64 +3326,6 @@ public class JavaParser implements JavaParserConstants {
     finally { jj_save(29, xla); }
   }
 
-  private boolean jj_3R_256() {
-    if (jj_3R_189()) return true;
-    return false;
-  }
-
-  private boolean jj_3_30() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(29)) jj_scanpos = xsp;
-    if (jj_3R_63()) return true;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_282() {
-    if (jj_3R_139()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_283()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_255() {
-    if (jj_3R_187()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_264() {
-    if (jj_3R_275()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_246() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_254()) {
-    jj_scanpos = xsp;
-    if (jj_3R_255()) {
-    jj_scanpos = xsp;
-    if (jj_3R_256()) {
-    jj_scanpos = xsp;
-    if (jj_3R_257()) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(82)) return true;
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_254() {
-    if (jj_3R_186()) return true;
-    return false;
-  }
-
   private boolean jj_3R_281() {
     if (jj_3R_282()) return true;
     return false;
@@ -5733,6 +5682,64 @@ public class JavaParser implements JavaParserConstants {
 
   private boolean jj_3R_257() {
     if (jj_3R_190()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_256() {
+    if (jj_3R_189()) return true;
+    return false;
+  }
+
+  private boolean jj_3_30() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(29)) jj_scanpos = xsp;
+    if (jj_3R_63()) return true;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_282() {
+    if (jj_3R_139()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_283()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_255() {
+    if (jj_3R_187()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_264() {
+    if (jj_3R_275()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_246() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_254()) {
+    jj_scanpos = xsp;
+    if (jj_3R_255()) {
+    jj_scanpos = xsp;
+    if (jj_3R_256()) {
+    jj_scanpos = xsp;
+    if (jj_3R_257()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(82)) return true;
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_254() {
+    if (jj_3R_186()) return true;
     return false;
   }
 
