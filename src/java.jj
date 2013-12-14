@@ -117,6 +117,7 @@ options {
 PARSER_BEGIN(JavaParser)
 
 import java.util.*;
+import java.util.regex.*;
 import java.io.File;
 
 public class JavaParser
@@ -143,17 +144,17 @@ public class JavaParser
         {
             filename = args[0];
             System.out.println("Java Parser Version 1.1 (for Java1.4 code):  Reading from file " + filename + " . . .");
-            try
-            {
+            /*try
+            {*/
                 startTime = System.currentTimeMillis();
-                parser = new JavaParser(new java.io.FileInputStream(filename));
+                parser = new JavaParser(new File(filename));
                 stopTime = System.currentTimeMillis();
                 initTime = stopTime - startTime;
-            } catch (java.io.FileNotFoundException e)
+            /*} catch (java.io.FileNotFoundException e)
             {
                 System.out.println("Java Parser Version 1.1 (for Java1.4 code):  File " + filename + " not found.");
                 return;
-            }
+            }*/
         } else
         {
             System.out.println("Java Parser Version 1.1 (for Java1.4 code):  Usage is one of:");
@@ -164,18 +165,18 @@ public class JavaParser
         }
         try
         {
-            startTime = System.currentTimeMillis();	
+            startTime = System.currentTimeMillis();
 
 
-  	    //Crée un JavaFile pour ce fichier et l'ajoute à l'ObjectManager.
-   	    JavaFile jf = new JavaFile(filename);	    	
-	    parser.om.push(jf);	
+            //Crï¿½e un JavaFile pour ce fichier et l'ajoute ï¿½ l'ObjectManager.
+            //JavaFile jf = new JavaFile(filename);
+            //parser.om.push(jf);
 
-	    //Parse....		    		
+            //Parse....		    		
             parser.CompilationUnit();
-		
 
-	    //Affiche le résultat
+
+            //Affiche le rï¿½sultat
             parser.showResults();
 
             stopTime = System.currentTimeMillis();
@@ -196,93 +197,96 @@ public class JavaParser
 	}
 
 	public JavaParser(File file){
-	java.io.FileInputStream stream = null;
-        try {
-            stream = new java.io.FileInputStream(file);
-        } catch (java.io.FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        jj_input_stream = new JavaCharStream(stream, 1, 1); 
-        token_source = new JavaParserTokenManager(jj_input_stream);
-        this.ReInit(stream);    
-        
-        //Crée un JavaFile pour ce fichier et l'ajoute à l'ObjectManager.
-        JavaFile jf = new JavaFile(file);
-        this.om.push(jf);
-        
-        try {
-            //Compile
-            this.CompilationUnit();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-	}
-
-    	public void showResults(){
-	
-		//Affiche le package du fichier
-		JavaFile javaFile;
-		javaFile = (JavaFile) this.om.get(0);
-		System.out.println("Informations capturees du fichier :" + javaFile.get_File().getName());
-		System.out.println("Package: " + javaFile.get_Package() + "\n");	
-
-		//Affiche les importations
-		System.out.println("Imports :");
-		ListIterator i = javaFile.get_importList().listIterator();
-	   	while(i.hasNext()){
-			System.out.println("  " + ((Import)i.next()).get_path());		
-		}		
-
-		//Stats du JavaFile
-		System.out.println("\nStatistiques du fichier "+ javaFile.get_File().getName()); 
-		System.out.println("   Nombre de classe(s): " + javaFile.get_classList().size());
-		System.out.println("   Nombre de classe(s) Publique(s) : " + javaFile.get_classList().get_classRange(Range.PUBLIC));	
-		System.out.println("   Nombre de classe(s) Privee(s) : " + javaFile.get_classList().get_classRange(Range.PRIVATE));
-		System.out.println("   Nombre de classe(s) Protected : " + javaFile.get_classList().get_classRange(Range.PROTECTED) + "\n");
-
-		//Affiche les informations de chaque classes
-		System.out.println("Classes du fichier:");
-		i = javaFile.get_classList().listIterator();
-	   	while(i.hasNext()){
-			DescriptionClass c = (DescriptionClass)i.next();
-			System.out.println(" +" + c.get_Name() + "\n");	
-
-			//Affiche les simple stats
-			System.out.println("    Nombre de sous-classe(s): " + c.classlist.size());
-			System.out.println("    Nombre de methode(s): " + c.methodlist.size());
-			System.out.println("    Nombre de methode(s) Publique(s) : " + 					  c.methodlist.get_methodsRange(Range.PUBLIC));	
-			System.out.println("    Nombre de methode(s) Privee(s) : " + 					  c.methodlist.get_methodsRange(Range.PRIVATE) );
-			System.out.println("    Nombre de methode(s) Protected : " + 					c.methodlist.get_methodsRange(Range.PROTECTED) + "\n");
-
-			//Affiche les attributs
-			System.out.println("    Liste d'attributs de la classe:");
-			ListIterator x = c.attributelist.listIterator();
-			while(x.hasNext())
-			    System.out.println("      " + ((Attribute)x.next()).toString());
-			System.out.println("");	
+        parseFile(file);
+    }
+    
+    private void parseFile(File file) {
+    	File[] children = file.listFiles();
+    	
+    	if (children != null) {
+    		for (File child : children) {
+    			parseFile(child);
+    		}
+    	}
+    	else {
+    		Pattern pattern = Pattern.compile("^.*[.]java$");
+    		if (pattern.matcher(file.getName()).find()) {
+	        	java.io.FileInputStream stream = null;
+		        try {
+		            stream = new java.io.FileInputStream(file);
+		        } catch (java.io.FileNotFoundException e) {
+		            e.printStackTrace();
+		        }
+		
+		        jj_input_stream = new JavaCharStream(stream, 1, 1);
+		        token_source = new JavaParserTokenManager(jj_input_stream);
+		        this.ReInit(stream);
+		
+		        //Crï¿½e un JavaFile pour ce fichier et l'ajoute ï¿½ l'ObjectManager.
+		        JavaFile jf = new JavaFile(file);
+		        this.om.push(jf);
+		
+		        try {
+		            //Compile
+		            this.CompilationUnit();
+		        } catch (ParseException e) {
+		            e.printStackTrace();
+		        }
+	        }
+    	}
+    }
 
 
-			//Affiche les méthodes
-			 x= c.methodlist.listIterator();
-	   		while(x.hasNext()){
-				Method m = (Method)x.next();
-				System.out.println("   +" + m.toString());
-				System.out.println("   Sa portee: " + m.range.toString() +"\n");	
-
-				//Affiche les simple stats
-				System.out.println("       Nombre d'attribut(s): " + m.attributelist.size());							
-				System.out.println("       Liste d'attributs :");
-				ListIterator y = m.attributelist.listIterator();
-				while(y.hasNext())
-					System.out.println("          " +((Attribute)y.next()).toString());
-				System.out.println("");
-			}
-
+	public void showResults(){
+		int fileCount = this.om.size();
+		List<DescriptionClass> classes = new ClassList();
+		//NumÃ©ro 1
+		
+		int privateAttr = 0;
+		int publicAttr = 0;
+		int protectedAttr = 0;
+		for (int curFile = 0; curFile < fileCount; curFile++) {
+			JavaFile javaFile;
+            javaFile = (JavaFile) this.om.get(curFile);
+			ListIterator i = javaFile.get_classList().listIterator();
+            while(i.hasNext()){
+                    DescriptionClass c = (DescriptionClass)i.next();
+                    classes.add(c);
+                    List<Attribute> attrs = c.get_AttributeList();
+                    for (Attribute attr: attrs) {
+                    	if (attr.range.get_Range() == Range.PUBLIC) {
+                    		publicAttr++;
+                    	}
+                    	else if (attr.range.get_Range() == Range.PRIVATE) {
+                    		privateAttr++;
+                    	}
+                    	else if (attr.range.get_Range() == Range.PROTECTED) {
+                    		protectedAttr++;
+                    	}
+                    }
+            }
 		}
 		
+		double total = privateAttr + publicAttr + protectedAttr;
+		
+		System.out.println("--------------------");
+		System.out.println("NumÃ©ro 1");
+		System.out.println("--------------------");
+		
+		System.out.println("% des attributs publics : " + (double)publicAttr / total * 100d);
+		System.out.println("% des attributs privÃ©s : " + (double)privateAttr / total * 100d);
+		System.out.println("% des attributs protÃ©gÃ©s : " + (double)protectedAttr / total * 100d);
+		
+		//NumÃ©ro 2
+		int primitive = 0;
+		int reference = 0;
+		for (DescriptionClass cur_class : classes) {
+			List<Attribute> attrs = cur_class.get_AttributeList();
+			for (Attribute a : attrs) {
+				
+			}
+		}
 	}	
-
 }
 
 PARSER_END(JavaParser)
@@ -635,7 +639,7 @@ void UnmodifiedClassDeclaration(Range r) :
 {
   "class" tNom = <IDENTIFIER> [ "extends" strExtends = Name() ] [ "implements" NameList(mjfm.actClass) ]
 
-  //Ajoute la classe à un parent.
+  //Ajoute la classe ï¿½ un parent.
   {
    mjfm.actClass.nom = tNom.toString();
    mjfm.actClass.superClass = strExtends;
@@ -788,9 +792,9 @@ void FieldDeclaration() :
  a.set_Name(strName);
  a.set_Type(strType);
 
- //Ajoute à notre manager l'attribut.
+ //Ajoute ï¿½ notre manager l'attribut.
  om.addToTopObject(a);
- om.pop(); 			//Enlève de la pile...
+ om.pop(); 			//Enlï¿½ve de la pile...
 }
 
 
@@ -804,9 +808,9 @@ void FieldDeclaration() :
   a.set_Type(strType);
 
 
-  //Ajoute à notre manager l'attribut.
+  //Ajoute ï¿½ notre manager l'attribut.
   om.addToTopObject(a);
-  om.pop(); 			//Enlève de la pile...
+  om.pop(); 			//Enlï¿½ve de la pile...
 }
 
   )* ";"
@@ -864,7 +868,7 @@ void MethodDeclaration() :
    | "native" | "synchronized" | "strictfp")*
   strResult = ResultType() m = MethodDeclarator(mm) [ "throws" NameListThrows(mm) ]
   ( 
-   //On est dans la méthode....
+   //On est dans la mï¿½thode....
    {
    	mm.returnType = strResult;
     mjfm.actClass.methods.add(mm);
@@ -873,7 +877,7 @@ void MethodDeclaration() :
     om.addToTopObject(m);
    }
    Block()
-   //On n'est plus dans la méthode.... 
+   //On n'est plus dans la mï¿½thode.... 
    {om.pop();}
   | ";" )
 }
@@ -1398,7 +1402,7 @@ void LocalVariableDeclaration() :
 {
   [ "final" {range.Final = true;} ] strType = Type() strId = VariableDeclarator() 
 
-//Ajoute l'attribu à la structure parente
+//Ajoute l'attribu ï¿½ la structure parente
 {
   a.set_Name(strId);
   a.set_Type(strType);
@@ -1411,7 +1415,7 @@ void LocalVariableDeclaration() :
 ( "," strId = VariableDeclarator() 
 
 
-//Ajoute l'attribu à la structure parente
+//Ajoute l'attribu ï¿½ la structure parente
 {
   a = new Attribute();
   a.range = range;
