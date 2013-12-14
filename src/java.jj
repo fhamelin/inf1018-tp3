@@ -239,21 +239,22 @@ public class JavaParser
 
 	public void showResults(){
 		int fileCount = this.om.size();
-		List<DescriptionClass> classes = new ClassList();
-		//Numéro 1
 		
 		int privateAttr = 0;
 		int publicAttr = 0;
 		int protectedAttr = 0;
+		int primitive = 0;
+		int reference = 0;
 		for (int curFile = 0; curFile < fileCount; curFile++) {
 			JavaFile javaFile;
             javaFile = (JavaFile) this.om.get(curFile);
 			ListIterator i = javaFile.get_classList().listIterator();
             while(i.hasNext()){
                     DescriptionClass c = (DescriptionClass)i.next();
-                    classes.add(c);
                     List<Attribute> attrs = c.get_AttributeList();
                     for (Attribute attr: attrs) {
+
+                      	//Numéro 1
                     	if (attr.range.get_Range() == Range.PUBLIC) {
                     		publicAttr++;
                     	}
@@ -263,6 +264,16 @@ public class JavaParser
                     	else if (attr.range.get_Range() == Range.PROTECTED) {
                     		protectedAttr++;
                     	}
+
+                    	//Numéro 2
+                    	if (attr.isPrimitive())
+						{
+						  	primitive++;
+						}
+						else
+						{
+						  	reference++;
+						}
                     }
             }
 		}
@@ -276,16 +287,15 @@ public class JavaParser
 		System.out.println("% des attributs publics : " + (double)publicAttr / total * 100d);
 		System.out.println("% des attributs privés : " + (double)privateAttr / total * 100d);
 		System.out.println("% des attributs protégés : " + (double)protectedAttr / total * 100d);
+
+		total = primitive + reference;
+
+		System.out.println("--------------------");
+		System.out.println("Numéro 2");
+		System.out.println("--------------------");
 		
-		//Numéro 2
-		int primitive = 0;
-		int reference = 0;
-		for (DescriptionClass cur_class : classes) {
-			List<Attribute> attrs = cur_class.get_AttributeList();
-			for (Attribute a : attrs) {
-				
-			}
-		}
+		System.out.println("% des attributs de type simple : " + (double)primitive / total * 100d);
+		System.out.println("% des attributs de référence : " + (double)reference / total * 100d);
 	}	
 }
 
@@ -773,6 +783,7 @@ void FieldDeclaration() :
 
  String strType = "";
  String strName = "";
+ String strPrimitiveType = "";
 }
 {
   ( "public" {range.set_Range(Range.PUBLIC); ma.range.range = MyRange.PUBLIC;} 

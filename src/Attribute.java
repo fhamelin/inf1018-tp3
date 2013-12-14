@@ -12,7 +12,7 @@ public class Attribute implements HaveRange{
 
     private String m_Type = "";
 
-    public Range range = new Range(); //La portée de l'attribut
+    public Range range = new Range(); //La portï¿½e de l'attribut
 
     /*
      * ============================================================================
@@ -32,7 +32,7 @@ public class Attribute implements HaveRange{
      */
 
     /**
-     * Redéfinit un attribut avec un nouveau nom et type
+     * Redï¿½finit un attribut avec un nouveau nom et type
      * 
      * @param nom
      *            String : Le nom de l'attribut
@@ -51,6 +51,7 @@ public class Attribute implements HaveRange{
     public void set_Type(String type) {
         m_Type = type;
     }
+
 
     /*
      * ============================================================================
@@ -73,11 +74,11 @@ public class Attribute implements HaveRange{
 
 
     /**
-     * Vérifie si deux attributs son égales.
+     * Vï¿½rifie si deux attributs son ï¿½gales.
      * 
      * @param Object
-     *            att : L'attribut à comparer.
-     * @return boolean : Vrai si l'attribut en paramètre est égale à celu-ci.
+     *            att : L'attribut ï¿½ comparer.
+     * @return boolean : Vrai si l'attribut en paramï¿½tre est ï¿½gale ï¿½ celu-ci.
      */
     public boolean equals(Object att) {
         boolean bEquals = false;
@@ -93,6 +94,10 @@ public class Attribute implements HaveRange{
         }
 
         return bEquals;
+    }
+    
+    public boolean isPrimitive() {
+    	return (m_Type == "boolean" || m_Type == "char" || m_Type == "byte" || m_Type == "short" || m_Type == "int" || m_Type == "long" || m_Type == "double" || m_Type == "float");
     }
 
     public String toString() {
