@@ -249,6 +249,9 @@ public class JavaParser
 		int primitive = 0;
 		int reference = 0;
 		String visibilitePerm = "";
+
+		//Variables #3
+		String heritageAssoc = "";
 		for (int curFile = 0; curFile < fileCount; curFile++) {
 			JavaFile javaFile;
             javaFile = (JavaFile) this.om.get(curFile);
@@ -256,6 +259,9 @@ public class JavaParser
             while(i.hasNext()){
                     DescriptionClass c = (DescriptionClass)i.next();
                     visibilitePerm += "Visibilité permanente de la classe " + c.get_Name() + " : \n";
+					heritageAssoc += "Classe : " + c.get_Name() + "\n";
+					heritageAssoc += "    Héritage : " + (c.get_superClassName() != "" ? c.get_superClassName() : "Aucun") + "\n";
+					heritageAssoc += "    Associations : \n";
                     List<Attribute> attrs = c.get_AttributeList();
                     for (Attribute attr: attrs) {
 
@@ -279,6 +285,7 @@ public class JavaParser
 						{
 						  	reference++;
 						  	visibilitePerm += "    " + attr.get_Type() + "\n";
+						  	heritageAssoc += "                   - " + attr.get_Type() + "\n";
 						}
                     }
             }
@@ -303,6 +310,12 @@ public class JavaParser
 		System.out.println("% des attributs de type simple : " + (double)primitive / total * 100d);
 		System.out.println("% des attributs de référence : " + (double)reference / total * 100d);
 		System.out.println(visibilitePerm);
+
+		System.out.println("--------------------");
+		System.out.println("Numéro 3");
+		System.out.println("--------------------");
+
+		System.out.println(heritageAssoc);
 	}	
 }
 
