@@ -6,7 +6,7 @@
 import java.util.Stack;
 
 /**
- * Permet de faire la gestion des structures capturées dans un parser créé par
+ * Permet de faire la gestion des structures capturï¿½es dans un parser crï¿½ï¿½ par
  * JavaCC
  * 
  * @author Daniel
@@ -18,16 +18,16 @@ public class ObjectManager extends Stack {
     }
 
     /**
-     * Ajoute un object dans l'object le plus récent de la pile selon le type de
-     * classe. Ajoute ensuite l'object au dessus de la pile comme étant l'objet
-     * que l'on travail présentement.<p/>
+     * Ajoute un object dans l'object le plus rï¿½cent de la pile selon le type de
+     * classe. Ajoute ensuite l'object au dessus de la pile comme ï¿½tant l'objet
+     * que l'on travail prï¿½sentement.<p/>
      * 
-     * Peut aussi être modifié pour que les if vérifie si l'objet implémente
+     * Peut aussi ï¿½tre modifiï¿½ pour que les if vï¿½rifie si l'objet implï¿½mente
      * un certain interface comme HaveClass, HaveMethod, etc...
      * 
      * @param o :
-     *            Un object devant être ajouté à la pile et à la structure la
-     *            plus récente de la pile.
+     *            Un object devant ï¿½tre ajoutï¿½ ï¿½ la pile et ï¿½ la structure la
+     *            plus rï¿½cente de la pile.
      */
     public void addToTopObject(Object o) {
 
@@ -35,6 +35,9 @@ public class ObjectManager extends Stack {
             Method m = (Method) peek();
             if (o instanceof Attribute) {
                 m.attributelist.add(o);
+            }
+            else if (o instanceof MethodCall) {
+            	m.add_Call((MethodCall)o);
             }
 
         } else if (peek() instanceof JavaFile) {
@@ -60,7 +63,7 @@ public class ObjectManager extends Stack {
 
         }
         
-        //Ajoute l'objet à la pile.
+        //Ajoute l'objet ï¿½ la pile.
         this.push(o);
     }
 }

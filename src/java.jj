@@ -252,6 +252,13 @@ public class JavaParser
 
 		//Variables #3
 		String heritageAssoc = "";
+
+		//Variables #4
+		String couplage = "";
+
+		//Variables #5
+		String grapheAppel = "";
+		
 		for (int curFile = 0; curFile < fileCount; curFile++) {
 			JavaFile javaFile;
             javaFile = (JavaFile) this.om.get(curFile);
@@ -259,6 +266,8 @@ public class JavaParser
             while(i.hasNext()){
                     DescriptionClass c = (DescriptionClass)i.next();
                     visibilitePerm += "Visibilité permanente de la classe " + c.get_Name() + " : \n";
+					couplage += "Couplage de la classe : " + c.get_Name() + "\n";
+					grapheAppel += "Graphe d'appel de la classe : " + c.get_Name() + "\n";
 					heritageAssoc += "Classe : " + c.get_Name() + "\n";
 					heritageAssoc += "    Héritage : " + (c.get_superClassName() != "" ? c.get_superClassName() : "Aucun") + "\n";
 					heritageAssoc += "    Associations : \n";
@@ -288,6 +297,54 @@ public class JavaParser
 						  	heritageAssoc += "                   - " + attr.get_Type() + "\n";
 						}
                     }
+                    List<Method> methods = c.methodlist;
+
+                    for (Method method:methods)                    {
+                      grapheAppel += "    " + method.get_Name() + " : \n";
+                      for (MethodCall mc:method.get_Calls())                      {
+						Attribute a = method.get_AttributeList().get(mc.getObject());
+						if (a == null)						{						  a = c.attributelist.get(mc.getObject());
+						}
+						DescriptionClass parent;
+						String className = "";
+
+						parent = c.get_Parent();
+						while (a == null && parent != null)						{
+						  a = parent.attributelist.get(mc.getObject());
+						  parent = parent.get_Parent();						}
+						if (a != null)						{
+						  className = a.get_Type().replace("[]","");						}
+						else
+						{
+							className = mc.getObject();
+						}
+						
+						DescriptionClass cls = this.getClassByName(className);
+						
+                        
+                        for (int position = 1; position < mc.getLength();position++)                        {
+                          if (cls == null)                          {
+                            break;                          }
+                          String call = mc.getCall(position);
+                          if (call.contains("()"))                          {
+                            grapheAppel += "        - " + cls.get_Name() + "." + call + "\n";
+                            //Chercher la classe de retour de la fonction
+                            List<Method> meths = cls.methodlist;
+                            cls = null;
+                            for (Method meth : meths)                            {
+                              if (meth.get_Name() == call.replace("()",""))                              {
+                                cls = this.getClassByName(meth.get_returnType());
+                                break;                              }                            }                          }
+                          else
+                          {
+                            attrs = cls.get_AttributeList();
+							cls = null;
+                            for (Attribute attr : attrs)
+                            {
+                              if (attr.get_Name() == call)                              {
+                                cls = this.getClassByName(attr.get_Type());
+                                break;                              }
+                            }                          }                        }                      }                    }
             }
 		}
 		
@@ -316,7 +373,37 @@ public class JavaParser
 		System.out.println("--------------------");
 
 		System.out.println(heritageAssoc);
-	}	
+
+		System.out.println("--------------------");
+		System.out.println("Numéro 4");
+		System.out.println("--------------------");
+
+		System.out.println(couplage);
+
+		System.out.println("--------------------");
+		System.out.println("Numéro 5");
+		System.out.println("--------------------");
+
+		System.out.println(grapheAppel);
+	}
+
+	private DescriptionClass getClassByName(String name)
+	{
+		for (int file_ctr = 0; file_ctr < this.om.size();file_ctr++)
+		{
+		  JavaFile file = (JavaFile)this.om.get(file_ctr);
+		  ListIterator class_it = file.get_classList().listIterator();
+		  while (class_it.hasNext())
+		  {
+		    DescriptionClass cur_class = (DescriptionClass)class_it.next();
+		    if (cur_class.get_Name().equals(name))
+		    {
+		      return cur_class;
+		    }
+		  }
+		}
+		return null;
+	  	}	
 }
 
 PARSER_END(JavaParser)
@@ -1050,7 +1137,9 @@ String Name() :
   ( LOOKAHEAD(2) "." tTemp = <IDENTIFIER> {strValeur += "." + tTemp.toString();}
   )*
 
-  {return strValeur;}
+  {
+   	return strValeur;
+  }
 }
 
 void NameList(MyClass c) :
@@ -1233,15 +1322,28 @@ void CastExpression() :
 }
 
 void PrimaryExpression() :
-{}
 {
-  PrimaryPrefix() ( LOOKAHEAD(2) PrimarySuffix() )*
+  MethodCall mc;
+  String strValeur = "";
+  String strTemp = "";
+}
+{
+  strValeur = PrimaryPrefix() ( LOOKAHEAD(2) strTemp = PrimarySuffix() { strValeur += strTemp; } )*
+  {
+    mc = new MethodCall(strValeur);
+    if (mc.getLength() > 1)
+    {
+    	this.om.addToTopObject(mc);
+    	this.om.pop();	
+   	}  }
 }
 
-void PrimaryPrefix() :
-{}
+String PrimaryPrefix() :
 {
-  Literal()
+	String strReturn = "";
+}
+{
+  (Literal()
 |
   "this"
 |
@@ -1254,16 +1356,20 @@ void PrimaryPrefix() :
   LOOKAHEAD( ResultType() "." "class" )
   ResultType() "." "class"
 |
-  Name()
+  strReturn = Name())
+  {
+    return strReturn;  }
 }
 
 /* Add "." "super" to be compatible with Java 1.2, 
  * Modified by Marco Savard
  */ 
-void PrimarySuffix() :
-{}
+String PrimarySuffix() :
 {
-  LOOKAHEAD(2)
+  Token tok = null;
+}
+{
+  (LOOKAHEAD(2)
   "." "this"
 |
   LOOKAHEAD(2)
@@ -1274,9 +1380,12 @@ void PrimarySuffix() :
 |
   "[" Expression() "]"
 |
-  "." <IDENTIFIER>
+  "." tok = <IDENTIFIER>
 |
-  Arguments()
+  Arguments()  {
+    return "()";  })
+  {
+    return tok == null ? "" : "." + tok.toString();  }
 }
 
 void Literal() :

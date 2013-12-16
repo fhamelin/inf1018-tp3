@@ -2,7 +2,7 @@ import java.util.*;
 
 
 /**
- * Contient les informations relatives à une methode. <p/>
+ * Contient les informations relatives ï¿½ une methode. <p/>
  * 
  * @author Daniel St-Yves
  */
@@ -18,22 +18,23 @@ public class Method implements HaveRange {
 
     static public String ATTRIBUTERETURNTYPE = "returntype";
 
-    public Range range = new Range(); //La porté de l'objet (private, public,
+    public Range range = new Range(); //La portï¿½ de l'objet (private, public,
 
     // protected)
 
-    private String m_methodName = ""; // Variable contenant le nom de la méthode
+    private String m_methodName = ""; // Variable contenant le nom de la mï¿½thode
 
     private String m_returnType = ""; // Le type du retour
 
-    //Liste contenant les paramètres de la classes
+    //Liste contenant les paramï¿½tres de la classes
     private AttributeList m_lstParameters = new AttributeList();
 
 
-    //Liste contenant les attributs déclarés locals dans la méthode.
+    //Liste contenant les attributs dï¿½clarï¿½s locals dans la mï¿½thode.
     public AttributeList attributelist = new AttributeList();
 
-
+    //Liste contenant les appels de mÃ©thodes
+    public List<MethodCall> callsList = new ArrayList<MethodCall>();
 
     /*
      * ============================================================================
@@ -79,6 +80,10 @@ public class Method implements HaveRange {
     public AttributeList get_Parameters() {
         return this.m_lstParameters;
     }
+    
+    public List<MethodCall> get_Calls() {
+    	return this.callsList;
+    }
 
 
     /*
@@ -94,12 +99,15 @@ public class Method implements HaveRange {
         m_lstParameters.add(a);
         this.attributelist.add(a);
     }
-
+    
+    public void add_Call(MethodCall mc) {
+    	this.callsList.add(mc);
+    }
 
 
     public String toString() {
 
-        //Le nom de la méthode
+        //Le nom de la mï¿½thode
         String className = this.get_Name();
 
         //Parametre

@@ -117,6 +117,7 @@ options {
 PARSER_BEGIN(JavaParser)
 
 import java.util.*;
+import java.util.regex.*;
 import java.io.File;
 
 public class JavaParser
@@ -143,17 +144,17 @@ public class JavaParser
         {
             filename = args[0];
             System.out.println("Java Parser Version 1.1 (for Java1.4 code):  Reading from file " + filename + " . . .");
-            try
-            {
+            /*try
+            {*/
                 startTime = System.currentTimeMillis();
-                parser = new JavaParser(new java.io.FileInputStream(filename));
+                parser = new JavaParser(new File(filename));
                 stopTime = System.currentTimeMillis();
                 initTime = stopTime - startTime;
-            } catch (java.io.FileNotFoundException e)
+            /*} catch (java.io.FileNotFoundException e)
             {
                 System.out.println("Java Parser Version 1.1 (for Java1.4 code):  File " + filename + " not found.");
                 return;
-            }
+            }*/
         } else
         {
             System.out.println("Java Parser Version 1.1 (for Java1.4 code):  Usage is one of:");
@@ -164,18 +165,18 @@ public class JavaParser
         }
         try
         {
-            startTime = System.currentTimeMillis();	
+            startTime = System.currentTimeMillis();
 
 
-  	    //Crée un JavaFile pour ce fichier et l'ajoute à l'ObjectManager.
-   	    JavaFile jf = new JavaFile(filename);	    	
-	    parser.om.push(jf);	
+            //Crï¿½e un JavaFile pour ce fichier et l'ajoute ï¿½ l'ObjectManager.
+            //JavaFile jf = new JavaFile(filename);
+            //parser.om.push(jf);
 
-	    //Parse....		    		
+            //Parse....		    		
             parser.CompilationUnit();
-		
 
-	    //Affiche le résultat
+
+            //Affiche le rï¿½sultat
             parser.showResults();
 
             stopTime = System.currentTimeMillis();
@@ -196,93 +197,213 @@ public class JavaParser
 	}
 
 	public JavaParser(File file){
-	java.io.FileInputStream stream = null;
-        try {
-            stream = new java.io.FileInputStream(file);
-        } catch (java.io.FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        jj_input_stream = new JavaCharStream(stream, 1, 1); 
-        token_source = new JavaParserTokenManager(jj_input_stream);
-        this.ReInit(stream);    
-        
-        //Crée un JavaFile pour ce fichier et l'ajoute à l'ObjectManager.
-        JavaFile jf = new JavaFile(file);
-        this.om.push(jf);
-        
-        try {
-            //Compile
-            this.CompilationUnit();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-	}
-
-    	public void showResults(){
-	
-		//Affiche le package du fichier
-		JavaFile javaFile;
-		javaFile = (JavaFile) this.om.get(0);
-		System.out.println("Informations capturees du fichier :" + javaFile.get_File().getName());
-		System.out.println("Package: " + javaFile.get_Package() + "\n");	
-
-		//Affiche les importations
-		System.out.println("Imports :");
-		ListIterator i = javaFile.get_importList().listIterator();
-	   	while(i.hasNext()){
-			System.out.println("  " + ((Import)i.next()).get_path());		
-		}		
-
-		//Stats du JavaFile
-		System.out.println("\nStatistiques du fichier "+ javaFile.get_File().getName()); 
-		System.out.println("   Nombre de classe(s): " + javaFile.get_classList().size());
-		System.out.println("   Nombre de classe(s) Publique(s) : " + javaFile.get_classList().get_classRange(Range.PUBLIC));	
-		System.out.println("   Nombre de classe(s) Privee(s) : " + javaFile.get_classList().get_classRange(Range.PRIVATE));
-		System.out.println("   Nombre de classe(s) Protected : " + javaFile.get_classList().get_classRange(Range.PROTECTED) + "\n");
-
-		//Affiche les informations de chaque classes
-		System.out.println("Classes du fichier:");
-		i = javaFile.get_classList().listIterator();
-	   	while(i.hasNext()){
-			DescriptionClass c = (DescriptionClass)i.next();
-			System.out.println(" +" + c.get_Name() + "\n");	
-
-			//Affiche les simple stats
-			System.out.println("    Nombre de sous-classe(s): " + c.classlist.size());
-			System.out.println("    Nombre de methode(s): " + c.methodlist.size());
-			System.out.println("    Nombre de methode(s) Publique(s) : " + 					  c.methodlist.get_methodsRange(Range.PUBLIC));	
-			System.out.println("    Nombre de methode(s) Privee(s) : " + 					  c.methodlist.get_methodsRange(Range.PRIVATE) );
-			System.out.println("    Nombre de methode(s) Protected : " + 					c.methodlist.get_methodsRange(Range.PROTECTED) + "\n");
-
-			//Affiche les attributs
-			System.out.println("    Liste d'attributs de la classe:");
-			ListIterator x = c.attributelist.listIterator();
-			while(x.hasNext())
-			    System.out.println("      " + ((Attribute)x.next()).toString());
-			System.out.println("");	
+        parseFile(file);
+    }
+    
+    private void parseFile(File file) {
+    	File[] children = file.listFiles();
+    	
+    	if (children != null) {
+    		for (File child : children) {
+    			parseFile(child);
+    		}
+    	}
+    	else {
+    		Pattern pattern = Pattern.compile("^.*[.]java$");
+    		if (pattern.matcher(file.getName()).find()) {
+	        	java.io.FileInputStream stream = null;
+		        try {
+		            stream = new java.io.FileInputStream(file);
+		        } catch (java.io.FileNotFoundException e) {
+		            e.printStackTrace();
+		        }
+		
+		        jj_input_stream = new JavaCharStream(stream, 1, 1);
+		        token_source = new JavaParserTokenManager(jj_input_stream);
+		        this.ReInit(stream);
+		
+		        //Crï¿½e un JavaFile pour ce fichier et l'ajoute ï¿½ l'ObjectManager.
+		        JavaFile jf = new JavaFile(file);
+		        this.om.push(jf);
+		
+		        try {
+		            //Compile
+		            this.CompilationUnit();
+		        } catch (ParseException e) {
+		            e.printStackTrace();
+		        }
+	        }
+    	}
+    }
 
 
-			//Affiche les méthodes
-			 x= c.methodlist.listIterator();
-	   		while(x.hasNext()){
-				Method m = (Method)x.next();
-				System.out.println("   +" + m.toString());
-				System.out.println("   Sa portee: " + m.range.toString() +"\n");	
+	public void showResults(){
+		int fileCount = this.om.size();
 
-				//Affiche les simple stats
-				System.out.println("       Nombre d'attribut(s): " + m.attributelist.size());							
-				System.out.println("       Liste d'attributs :");
-				ListIterator y = m.attributelist.listIterator();
-				while(y.hasNext())
-					System.out.println("          " +((Attribute)y.next()).toString());
-				System.out.println("");
-			}
+		//Variables #1
+		int privateAttr = 0;
+		int publicAttr = 0;
+		int protectedAttr = 0;
 
+		//Variables #2
+		int primitive = 0;
+		int reference = 0;
+		String visibilitePerm = "";
+
+		//Variables #3
+		String heritageAssoc = "";
+
+		//Variables #4
+		String couplage = "";
+
+		//Variables #5
+		String grapheAppel = "";
+		
+		for (int curFile = 0; curFile < fileCount; curFile++) {
+			JavaFile javaFile;
+            javaFile = (JavaFile) this.om.get(curFile);
+			ListIterator i = javaFile.get_classList().listIterator();
+            while(i.hasNext()){
+                    DescriptionClass c = (DescriptionClass)i.next();
+                    visibilitePerm += "VisibilitÃ© permanente de la classe " + c.get_Name() + " : \n";
+					couplage += "Couplage de la classe : " + c.get_Name() + "\n";
+					grapheAppel += "Graphe d'appel de la classe : " + c.get_Name() + "\n";
+					heritageAssoc += "Classe : " + c.get_Name() + "\n";
+					heritageAssoc += "    HÃ©ritage : " + (c.get_superClassName() != "" ? c.get_superClassName() : "Aucun") + "\n";
+					heritageAssoc += "    Associations : \n";
+                    List<Attribute> attrs = c.get_AttributeList();
+                    for (Attribute attr: attrs) {
+
+                      	//NumÃ©ro 1
+                    	if (attr.range.get_Range() == Range.PUBLIC) {
+                    		publicAttr++;
+                    	}
+                    	else if (attr.range.get_Range() == Range.PRIVATE) {
+                    		privateAttr++;
+                    	}
+                    	else if (attr.range.get_Range() == Range.PROTECTED) {
+                    		protectedAttr++;
+                    	}
+
+                    	//NumÃ©ro 2
+                    	if (attr.isPrimitive())
+						{
+						  	primitive++;
+						}
+						else
+						{
+						  	reference++;
+						  	visibilitePerm += "    " + attr.get_Type() + "\n";
+						  	heritageAssoc += "                   - " + attr.get_Type() + "\n";
+						}
+                    }
+                    List<Method> methods = c.methodlist;
+
+                    for (Method method:methods)                    {
+                      grapheAppel += "    " + method.get_Name() + " : \n";
+                      for (MethodCall mc:method.get_Calls())                      {
+						Attribute a = method.get_AttributeList().get(mc.getObject());
+						if (a == null)						{						  a = c.attributelist.get(mc.getObject());
+						}
+						DescriptionClass parent;
+						String className = "";
+
+						parent = c.get_Parent();
+						while (a == null && parent != null)						{
+						  a = parent.attributelist.get(mc.getObject());
+						  parent = parent.get_Parent();						}
+						if (a != null)						{
+						  className = a.get_Type().replace("[]","");						}
+						else
+						{
+							className = mc.getObject();
+						}
+						
+						DescriptionClass cls = this.getClassByName(className);
+						
+                        
+                        for (int position = 1; position < mc.getLength();position++)                        {
+                          if (cls == null)                          {
+                            break;                          }
+                          String call = mc.getCall(position);
+                          if (call.contains("()"))                          {
+                            grapheAppel += "        - " + cls.get_Name() + "." + call + "\n";
+                            //Chercher la classe de retour de la fonction
+                            List<Method> meths = cls.methodlist;
+                            cls = null;
+                            for (Method meth : meths)                            {
+                              if (meth.get_Name() == call.replace("()",""))                              {
+                                cls = this.getClassByName(meth.get_returnType());
+                                break;                              }                            }                          }
+                          else
+                          {
+                            attrs = cls.get_AttributeList();
+							cls = null;
+                            for (Attribute attr : attrs)
+                            {
+                              if (attr.get_Name() == call)                              {
+                                cls = this.getClassByName(attr.get_Type());
+                                break;                              }
+                            }                          }                        }                      }                    }
+            }
 		}
 		
-	}	
+		double total = privateAttr + publicAttr + protectedAttr;
+		
+		System.out.println("--------------------");
+		System.out.println("NumÃ©ro 1");
+		System.out.println("--------------------");
+		
+		System.out.println("% des attributs publics : " + (double)publicAttr / total * 100d);
+		System.out.println("% des attributs privÃ©s : " + (double)privateAttr / total * 100d);
+		System.out.println("% des attributs protÃ©gÃ©s : " + (double)protectedAttr / total * 100d);
 
+		total = primitive + reference;
+
+		System.out.println("--------------------");
+		System.out.println("NumÃ©ro 2");
+		System.out.println("--------------------");
+		
+		System.out.println("% des attributs de type simple : " + (double)primitive / total * 100d);
+		System.out.println("% des attributs de rÃ©fÃ©rence : " + (double)reference / total * 100d);
+		System.out.println(visibilitePerm);
+
+		System.out.println("--------------------");
+		System.out.println("NumÃ©ro 3");
+		System.out.println("--------------------");
+
+		System.out.println(heritageAssoc);
+
+		System.out.println("--------------------");
+		System.out.println("NumÃ©ro 4");
+		System.out.println("--------------------");
+
+		System.out.println(couplage);
+
+		System.out.println("--------------------");
+		System.out.println("NumÃ©ro 5");
+		System.out.println("--------------------");
+
+		System.out.println(grapheAppel);
+	}
+
+	private DescriptionClass getClassByName(String name)
+	{
+		for (int file_ctr = 0; file_ctr < this.om.size();file_ctr++)
+		{
+		  JavaFile file = (JavaFile)this.om.get(file_ctr);
+		  ListIterator class_it = file.get_classList().listIterator();
+		  while (class_it.hasNext())
+		  {
+		    DescriptionClass cur_class = (DescriptionClass)class_it.next();
+		    if (cur_class.get_Name().equals(name))
+		    {
+		      return cur_class;
+		    }
+		  }
+		}
+		return null;
+	  	}	
 }
 
 PARSER_END(JavaParser)
@@ -635,7 +756,7 @@ void UnmodifiedClassDeclaration(Range r) :
 {
   "class" tNom = <IDENTIFIER> [ "extends" strExtends = Name() ] [ "implements" NameList(mjfm.actClass) ]
 
-  //Ajoute la classe à un parent.
+  //Ajoute la classe ï¿½ un parent.
   {
    mjfm.actClass.nom = tNom.toString();
    mjfm.actClass.superClass = strExtends;
@@ -769,6 +890,7 @@ void FieldDeclaration() :
 
  String strType = "";
  String strName = "";
+ String strPrimitiveType = "";
 }
 {
   ( "public" {range.set_Range(Range.PUBLIC); ma.range.range = MyRange.PUBLIC;} 
@@ -788,9 +910,9 @@ void FieldDeclaration() :
  a.set_Name(strName);
  a.set_Type(strType);
 
- //Ajoute à notre manager l'attribut.
+ //Ajoute ï¿½ notre manager l'attribut.
  om.addToTopObject(a);
- om.pop(); 			//Enlève de la pile...
+ om.pop(); 			//Enlï¿½ve de la pile...
 }
 
 
@@ -804,9 +926,9 @@ void FieldDeclaration() :
   a.set_Type(strType);
 
 
-  //Ajoute à notre manager l'attribut.
+  //Ajoute ï¿½ notre manager l'attribut.
   om.addToTopObject(a);
-  om.pop(); 			//Enlève de la pile...
+  om.pop(); 			//Enlï¿½ve de la pile...
 }
 
   )* ";"
@@ -864,7 +986,7 @@ void MethodDeclaration() :
    | "native" | "synchronized" | "strictfp")*
   strResult = ResultType() m = MethodDeclarator(mm) [ "throws" NameListThrows(mm) ]
   ( 
-   //On est dans la méthode....
+   //On est dans la mï¿½thode....
    {
    	mm.returnType = strResult;
     mjfm.actClass.methods.add(mm);
@@ -873,7 +995,7 @@ void MethodDeclaration() :
     om.addToTopObject(m);
    }
    Block()
-   //On n'est plus dans la méthode.... 
+   //On n'est plus dans la mï¿½thode.... 
    {om.pop();}
   | ";" )
 }
@@ -1015,7 +1137,9 @@ String Name() :
   ( LOOKAHEAD(2) "." tTemp = <IDENTIFIER> {strValeur += "." + tTemp.toString();}
   )*
 
-  {return strValeur;}
+  {
+   	return strValeur;
+  }
 }
 
 void NameList(MyClass c) :
@@ -1198,15 +1322,28 @@ void CastExpression() :
 }
 
 void PrimaryExpression() :
-{}
 {
-  PrimaryPrefix() ( LOOKAHEAD(2) PrimarySuffix() )*
+  MethodCall mc;
+  String strValeur = "";
+  String strTemp = "";
+}
+{
+  strValeur = PrimaryPrefix() ( LOOKAHEAD(2) strTemp = PrimarySuffix() { strValeur += strTemp; } )*
+  {
+    mc = new MethodCall(strValeur);
+    if (mc.getLength() > 1)
+    {
+    	this.om.addToTopObject(mc);
+    	this.om.pop();	
+   	}  }
 }
 
-void PrimaryPrefix() :
-{}
+String PrimaryPrefix() :
 {
-  Literal()
+	String strReturn = "";
+}
+{
+  (Literal()
 |
   "this"
 |
@@ -1219,16 +1356,20 @@ void PrimaryPrefix() :
   LOOKAHEAD( ResultType() "." "class" )
   ResultType() "." "class"
 |
-  Name()
+  strReturn = Name())
+  {
+    return strReturn;  }
 }
 
 /* Add "." "super" to be compatible with Java 1.2, 
  * Modified by Marco Savard
  */ 
-void PrimarySuffix() :
-{}
+String PrimarySuffix() :
 {
-  LOOKAHEAD(2)
+  Token tok = null;
+}
+{
+  (LOOKAHEAD(2)
   "." "this"
 |
   LOOKAHEAD(2)
@@ -1239,9 +1380,12 @@ void PrimarySuffix() :
 |
   "[" Expression() "]"
 |
-  "." <IDENTIFIER>
+  "." tok = <IDENTIFIER>
 |
-  Arguments()
+  Arguments()  {
+    return "()";  })
+  {
+    return tok == null ? "" : "." + tok.toString();  }
 }
 
 void Literal() :
@@ -1398,7 +1542,7 @@ void LocalVariableDeclaration() :
 {
   [ "final" {range.Final = true;} ] strType = Type() strId = VariableDeclarator() 
 
-//Ajoute l'attribu à la structure parente
+//Ajoute l'attribu ï¿½ la structure parente
 {
   a.set_Name(strId);
   a.set_Type(strType);
@@ -1411,7 +1555,7 @@ void LocalVariableDeclaration() :
 ( "," strId = VariableDeclarator() 
 
 
-//Ajoute l'attribu à la structure parente
+//Ajoute l'attribu ï¿½ la structure parente
 {
   a = new Attribute();
   a.range = range;

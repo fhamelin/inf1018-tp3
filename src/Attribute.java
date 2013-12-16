@@ -97,7 +97,8 @@ public class Attribute implements HaveRange{
     }
     
     public boolean isPrimitive() {
-    	return (m_Type == "boolean" || m_Type == "char" || m_Type == "byte" || m_Type == "short" || m_Type == "int" || m_Type == "long" || m_Type == "double" || m_Type == "float");
+    	String type = m_Type.replace("[]", "");
+    	return (type.equals("boolean") || type.equals("char") || type.equals("byte") || type.equals("short") || type.equals("int") || type.equals("long") || type.equals("double") || type.equals("float"));
     }
 
     public String toString() {
