@@ -118,6 +118,8 @@ PARSER_BEGIN(JavaParser)
 
 import java.util.*;
 import java.util.regex.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.io.File;
 
 public class JavaParser
@@ -264,13 +266,23 @@ public class JavaParser
             javaFile = (JavaFile) this.om.get(curFile);
 			ListIterator i = javaFile.get_classList().listIterator();
             while(i.hasNext()){
+              		//Classe courante
                     DescriptionClass c = (DescriptionClass)i.next();
+
+					//Map qui contient le comptage du couplage
+                    Map<String, Integer> mapCoup = new HashMap<String, Integer>();
+
+                    //Ajout d'informations sur la classe pour l'output
                     visibilitePerm += "Visibilité permanente de la classe " + c.get_Name() + " : \n";
 					couplage += "Couplage de la classe : " + c.get_Name() + "\n";
 					grapheAppel += "Graphe d'appel de la classe : " + c.get_Name() + "\n";
+
+					//Informations pour l'output du numéro 3
 					heritageAssoc += "Classe : " + c.get_Name() + "\n";
 					heritageAssoc += "    Héritage : " + (c.get_superClassName() != "" ? c.get_superClassName() : "Aucun") + "\n";
 					heritageAssoc += "    Associations : \n";
+
+					//Boucle à travers les attributs de la classe
                     List<Attribute> attrs = c.get_AttributeList();
                     for (Attribute attr: attrs) {
 
@@ -297,8 +309,9 @@ public class JavaParser
 						  	heritageAssoc += "                   - " + attr.get_Type() + "\n";
 						}
                     }
-                    List<Method> methods = c.methodlist;
 
+                    //Boucle à travers les méthodes de la classe courante
+                    List<Method> methods = c.methodlist;
                     for (Method method:methods)                    {
                       grapheAppel += "    " + method.get_Name() + " : \n";
                       for (MethodCall mc:method.get_Calls())                      {
@@ -328,6 +341,13 @@ public class JavaParser
                           String call = mc.getCall(position);
                           if (call.contains("()"))                          {
                             grapheAppel += "        - " + cls.get_Name() + "." + call + "\n";
+
+                            if (mapCoup.containsKey(cls.get_Name()))                            {
+                              Integer nbCoup = mapCoup.get(cls.get_Name());
+                              nbCoup += 1;
+                              mapCoup.put(cls.get_Name(), nbCoup);                            }
+                            else                            {
+                              mapCoup.put(cls.get_Name(), (Integer)1);                            }
                             //Chercher la classe de retour de la fonction
                             List<Method> meths = cls.methodlist;
                             cls = null;
@@ -343,8 +363,14 @@ public class JavaParser
                             {
                               if (attr.get_Name() == call)                              {
                                 cls = this.getClassByName(attr.get_Type());
-                                break;                              }
-                            }                          }                        }                      }                    }
+                                break;                              } //end if (attr.get_Name() == call)
+                            } //end for (Attribute attr : attrs)                          }                        }                      }                    }
+
+                    Iterator itCoup = mapCoup.entrySet().iterator();
+
+                    while (itCoup.hasNext())                    {
+                      Map.Entry entry = (Map.Entry)itCoup.next();
+                      couplage += entry.getKey() + " : " + entry.getValue() + "\n";                    }
             }
 		}
 		
