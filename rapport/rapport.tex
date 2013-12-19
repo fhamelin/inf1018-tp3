@@ -15,7 +15,7 @@
 % ENTÊTES
 \usepackage{fancyhdr}
 \pagestyle{fancy}
-\lhead{INF1010\\Travail Pratique 2}
+\lhead{INF1018\\Travail Pratique 3}
 % STYLE SECTIONS
 \usepackage{sectsty}
 \sectionfont{\sectionrule{0ex}{0pt}{-1ex}{0.5pt}}
@@ -105,7 +105,7 @@
             \begin{minipage}{0.5\textwidth}
                 \begin{flushright} \large
                     \emph{Professeur:} \\[0.5cm]
-                    Boucif \textsc{Amar Bensaber}, Ph.D
+                    Mourad \textsc{Badri}, Ph.D
                     \vspace{\parskip}
                 \end{flushright}
             \end{minipage}
@@ -116,17 +116,69 @@
         \end{center}
         \thispagestyle{empty}
     \end{titlepage}
-    \pagenumbering{roman}
-    \setcounter{page}{1}
-
-    \tableofcontents
-    \newpage
 
     \pagenumbering{arabic}
     \setcounter{page}{1}
 
     % INTRODUCTION ICI
 
-    
-    
+    \section{JavaCC} % (fold)
+    \label{sec:javacc}
+        \subsection{Implémentation} % (fold)
+        \label{sub:implementation}
+            % - grammaire doit être écrite au complet
+            % - Coder l'anlyseur syntaxique:
+            % - nécessite d'apprendre la grammaire de JavaCC
+            %
+        % subsection implementation (end)
+
+        \subsection{Avantages et inconvénients} % (fold)
+        \label{sub:avantages-inconvenients}
+        % AVANTAGES
+        % - flexible (il suffit de déclarer la grammaire)
+        %   - permet d'analyser n'importe quel langage
+        %   - permet de créer un arbre syntaxique soit-même.
+        %   - exécution facile puisqu'aucune dépendence envers autres choses que Java
+
+        % INCONVÉNIENTS
+        % - Pour l'analyse d'un projet Java, JavaCC nécessite l'écriture de beaucoup de
+        %   fonctionnalités déjà implémentées (comme dans AST).
+        % - nécessite d'apprendre la grammaire de JavaCC
+        %
+        % subsection avantages-inconvenients (end)
+
+        \subsection{Impact de l'évolution de Java} % (fold)
+        \label{sub:impact-evolution-java}
+        % - Impact significatif. Lorsque Java change, le programme doit changer.
+        %
+        % subsection impact-evolution-java (end)
+
+    % section javacc (end)
+
+    \section{AST d'Eclipse} % (fold)
+    \label{sec:ast-eclipse}
+        \subsection{Implémentation} % (fold)
+        \label{sub:implementation}
+        % - Un programmeur Java peut faciler créer un plugin
+        %
+        % subsection implementation (end)
+
+        \subsection{Avantages et inconvénients} % (fold)
+        \label{sub:avantages-inconvenients}
+        % AVANTAGES
+        % - grammaire de Java déjà analysée
+        % - arbre syntaxique déjà créé
+
+        % INCONVÉNIENTS
+        % - exécution est confiné dans l'environnement Eclipse
+        % - non-flexible au niveau du langage à analyser
+        % subsection avantages-inconvenients (end)
+
+        \subsection{Impact de l'évolution de Java} % (fold)
+        \label{sub:impact-evolution-java}
+        % AST rend les modifications de Java opaques. 
+
+        % subsection impact-evolution-java (end)
+    % section ast (end)
+
 \end{document}
