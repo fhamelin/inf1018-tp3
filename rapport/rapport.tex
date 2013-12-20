@@ -131,7 +131,12 @@
             % - nécessite d'apprendre la grammaire de JavaCC
             %
         % subsection implementation (end)
-
+        Pour commencer, voici les conclusions que nous tirons de la facilité d'implémentation pour JavaCC.
+        JavaCC sert à créer des analyseurs de grammaires et n'a donc pas d'analyseur de Java déjà fait à
+        offrir. Il faut donc le programmer nous-même ou bien en trouver un que quelqu'un a fait. Il faut donc
+        écrire la grammaire au complet et programmer l'analyseur syntaxique avant de pouvoir faire les manipulations
+        voulues. Aussi, JavaCC utilise sa propre grammaire qui combine aussi du Java mais ça demande quand même
+        l'apprentissage du nouveau langage.
         \subsection{Avantages et inconvénients} % (fold)
         \label{sub:avantages-inconvenients}
         % AVANTAGES
@@ -163,7 +168,9 @@
         % - Impact significatif. Lorsque Java change, le programme doit changer.
         %
         % subsection impact-evolution-java (end)
-
+        Étant donné que la grammaire et la syntaxe sont directement définis dans le code, si jamais une nouvelle version
+        de Java arrive, on doit modifier le code pour rencontrer les nouveaux critères définis par la nouvelle version du
+        langage.
     % section javacc (end)
 
     \section{AST d'Eclipse} % (fold)
@@ -173,7 +180,9 @@
         % - Un programmeur Java peut faciler créer un plugin
         %
         % subsection implementation (end)
-
+        Pour ce qui a trait à la facilité d'implémentation, l'utilisation des AST d'Eclipse est mieux que l'utilisation de
+        JavaCC puisqu'elle requiert seulement l'utilisation de code Java. C'est donc une tâche facile pour n'importe lequel
+        programmeur Java.
         \subsection{Avantages et inconvénients} % (fold)
         \label{sub:avantages-inconvenients}
         % AVANTAGES
@@ -197,7 +206,10 @@
         \subsection{Impact de l'évolution de Java} % (fold)
         \label{sub:impact-evolution-java}
         % AST rend les modifications de Java opaques. 
-
+        Étant donné que les AST font l'analyse lexicale et syntaxique et créent l'arbre syntaxique automatiquement, 
+        si jamais une nouvelle version de Java est mise sur le marché, il ne suffit que de compiler le code qu'on a
+        déjà dans la nouvelle version et tout devrait fonctionner sans avoir eu à modifier le code que nous avons 
+        déjà écrit.
         % subsection impact-evolution-java (end)
     % section ast (end)
 
