@@ -90,8 +90,8 @@
         \begin{center}
             \noindent\rule{13cm}{1pt}\\[0.4cm]
              % Titre
-            \textsc{\huge \bfseries Travail Pratique 2}\\
-                                    INF1010\\[0.4cm]
+            \textsc{\huge \bfseries Travail Pratique 3}\\
+                                    INF1018\\[0.4cm]
             \noindent\rule{13cm}{1pt}\\[5cm]
 
             % Auteurs
@@ -139,12 +139,23 @@
         %   - permet d'analyser n'importe quel langage
         %   - permet de créer un arbre syntaxique soit-même.
         %   - exécution facile puisqu'aucune dépendence envers autres choses que Java
+            D'un côté, {\tt JavaCC} procure une flexibilité très avantageuse. Il ne se limite pas à
+            un langage en particulier ; il permet d'analyser un langage au choix. Il suffit d'écrire
+            la grammaire du langage en question et de construire l'analyseur syntaxique afin
+            d'obtenir le résultat attendu. De plus, l'exécution d'un programme {\tt JavaCC} n'est
+            pas dépendante d'autres choses que {\tt Java}. On peut donc créer l'interface qu'on
+            souhaite et l'utiliser comme on veut (interface {\it shell}, fenêtre, script, etc.).
 
         % INCONVÉNIENTS
         % - Pour l'analyse d'un projet Java, JavaCC nécessite l'écriture de beaucoup de
         %   fonctionnalités déjà implémentées (comme dans AST).
         % - nécessite d'apprendre la grammaire de JavaCC
-        %
+            D'un autre côté, si on considère l'écriture d'un programme {\tt JavaCC} faisant
+            l'analyse de code {\tt Java} il est clair que l'écriture de la grammaire et de l'arbre
+            syntaxique apparait comme une tâche redondente à cause de l'existence d'outils, comme
+            {\tt AST}, réalisant déjà le travail. Il est nécessaire aussi de considérer qu'il ne
+            suffit pas d'être programmeur {\tt Java} afin d'arriver à ces fins car il est nécessaire
+            d'apprendre la grammaire d e{\tt JavaCC}.
         % subsection avantages-inconvenients (end)
 
         \subsection{Impact de l'évolution de Java} % (fold)
@@ -168,10 +179,19 @@
         % AVANTAGES
         % - grammaire de Java déjà analysée
         % - arbre syntaxique déjà créé
+        % - Programmeur java peut coder avec AST
+            D'une façon, le {\it plugin} {\tt AST} d'Eclipse offre une gamme d'outils rendant
+            l'analyse lexicale et syntaxique abstraite. Ce faisant, un programmeur {\tt Java} n'a
+            qu'à lire la documentation {\tt Java} d'{\tt AST} afin de programmer son analyseur.
 
         % INCONVÉNIENTS
         % - exécution est confiné dans l'environnement Eclipse
         % - non-flexible au niveau du langage à analyser
+            D'une autre façon, {\tt AST} est désavantagé du point de vue de l'exécution. Celle-ci
+            est confiné à l'intérieur d'Eclipse. On ne peut donc pas utiliser l'analyseur créé avec
+            {\tt AST} comme un programme à part entière s'exécutant dans diverses environnements
+            (interface système par exemple). De plus, {\tt AST} ne permet d'analyser que le langage
+            {\tt Java}. Ce qui le rend non-flexible au niveau du langage à anlayser.
         % subsection avantages-inconvenients (end)
 
         \subsection{Impact de l'évolution de Java} % (fold)

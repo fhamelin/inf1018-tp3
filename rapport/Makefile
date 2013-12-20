@@ -1,6 +1,6 @@
 #--------------------------------------------------------
 # File: Makefile    Author(s): Simon Désaulniers
-# 			       Frédéric Hamelin
+# 			       			   Frédéric Hamelin
 # Date: 2013-12-19
 #--------------------------------------------------------
 # Makefile pour rapport en LaTeX
